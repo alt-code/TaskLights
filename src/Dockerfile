@@ -15,5 +15,8 @@ RUN bash nodesource_setup.sh
 RUN apt-get install -y nodejs
 RUN node -v
 
+RUN apt-get install usbutils
+#RUN apt-get -y install alsa-utils
+
 ADD . /TaskLights
 RUN cd /TaskLights && npm install 
