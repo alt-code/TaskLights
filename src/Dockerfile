@@ -19,4 +19,6 @@ RUN apt-get install -y usbutils
 #RUN apt-get -y install alsa-utils
 
 ADD . /TaskLights
+# Remove any old builds that might be copied over.
+RUN rm -rf /TaskLights/node_modules
 RUN cd /TaskLights && npm install 
