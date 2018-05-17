@@ -64,7 +64,7 @@ Vagrant.configure('2') do |config|
         echo 'snd-hda-intel' >> /etc/modules
         modprobe snd
         modprobe snd-hda-intel
-        alsa force-reload
+        alsa force-reload || true
     SCRIPT
   end
 
