@@ -10,51 +10,49 @@ Simply having the light on is a strong and constant environmental cue that you h
 
 The LED light is a [blink(1)](https://blink1.thingm.com/).
 
-## Instructions for installing on Linux (tested on 14.04 LTS 64-bit):
+## Command line arguments
+##### Run "node blink.js --help" for help page:
+1. Type:
+     * `--solid`  or `-s`
+     * `--linear` or `-l`
+     * `--exponential` or `-e`
+2. Length:
+     * `--length 10` (in minutes)
+3. Lightness (optional):
+     * `--lightness 0.7`
+4. Pomodoro (25 min linear session):
+     * `--pomodoro` or `-p`
+     * Ticking sound: `--tick` or `-t`
 
-1. #### Setting up environment
-  * Seting up basic requirements:
-  ``` bash
-  sudo apt-get update
-  sudo apt-get install git make vim python-dev python-pip
-  sudo apt-get install build-essential libssl-dev
+ For example to do a pomodoro with ticking sound:
+ ``` bash
+ $ node blink.js -p -t
   ```
+ Or to do solid style indicator for 45 minuets:
+ ``` bash
+ $ node blink.js --solid --length 45
+ ```
 
-  * Setting up USB library:
-  ``` bash
-  sudo apt-get install libudev-dev libusb-1.0-0-dev libfox-1.6-dev
-  ```
+## Running in Vagrant/Docker
 
-  If using Debian/Ubuntu:
-  ```
-  sudo apt-get install libasound2-dev
-  ```
+Install VirtualBox and VirtualBox extensions (for usb 2/3 support)
+Install Vagrant.
 
-2. #### Installing Node.js:
-  * See [tutorial here](https://www.digitalocean.com/community/tutorials/how-to-install-node-js-on-an-ubuntu-14-04-server) for other ways:
-  ``` bash
-  curl https://raw.githubusercontent.com/creationix/nvm/v0.16.1/install.sh | sh
-  source ~/.profile
-  nvm ls-remote
-  nvm install v6.9.4
-  nvm use 6.9.4
-  node -v
-  # See where installed
-  which node
-  ```
+To provision a virtual machine with usb support and the blink1 device attached, and docker, then in the directory with the Vagrantfile, run:
+```
+vagrant up
+vagrant ssh
+```
 
-  You may want to add `nvm use 6.9.4` add the end of your .bashrc/.profile or change (nvm alias)[https://github.com/creationix/nvm#listing-versions] to set 6.9.4 be your default version:
-    `nvm alias default 6.9.4`
+You may have to plug-in/out the blink1 in order for the usb device to register with the VM. Confirm you can see the device with `lsusb`. 
 
-3. #### Change directory to src and do:
-  ```npm install```
-
-  
-4. #### To get the web-server to work:
-  Change directory to `/src/controllers/web` and do
-  ```npm install```
-  and to start the local-server do the following and go to `http://localhost:5000/` in your browser:
-  ```node app.js```
+Inside /vagrant/src/ Build the docker image and run!
+```
+sudo docker build -t chrisparnin/tasklights
+# use the value you see from lsusb
+sudo docker run -it --device /dev/bus/usb/002/002 chrisparnin/tasklights bash
+$container> cd /TaskLights && node blink.js -p
+```
 
 
 ## Instructions for installing on Windows (tested on win 7, 10):
@@ -129,28 +127,53 @@ The LED light is a [blink(1)](https://blink1.thingm.com/).
 
 <br/>
 
-## Command line arguments
-##### Run "node blink.js --help" for help page:
-1. Type:
-     * `--solid`  or `-s`
-     * `--linear` or `-l`
-     * `--exponential` or `-e`
-2. Length:
-     * `--length 10` (in minutes)
-3. Lightness (optional):
-     * `--lightness 0.7`
-4. Pomodoro (25 min linear session):
-     * `--pomodoro` or `-p`
-     * Ticking sound: `--tick` or `-t`
+## Instructions for installing on Linux (tested on 14.04 LTS 64-bit):
 
- For example to do a pomodoro with ticking sound:
- ``` bash
- $ node blink.js -p -t
+1. #### Setting up environment
+  * Seting up basic requirements:
+  ``` bash
+  sudo apt-get update
+  sudo apt-get install git make vim python-dev python-pip
+  sudo apt-get install build-essential libssl-dev
   ```
- Or to do solid style indicator for 45 minuets:
- ``` bash
- $ node blink.js --solid --length 45
- ```
+
+  * Setting up USB library:
+  ``` bash
+  sudo apt-get install libudev-dev libusb-1.0-0-dev libfox-1.6-dev
+  ```
+
+  If using Debian/Ubuntu:
+  ```
+  sudo apt-get install libasound2-dev
+  ```
+
+2. #### Installing Node.js:
+  * See [tutorial here](https://www.digitalocean.com/community/tutorials/how-to-install-node-js-on-an-ubuntu-14-04-server) for other ways:
+  ``` bash
+  curl https://raw.githubusercontent.com/creationix/nvm/v0.16.1/install.sh | sh
+  source ~/.profile
+  nvm ls-remote
+  nvm install v6.9.4
+  nvm use 6.9.4
+  node -v
+  # See where installed
+  which node
+  ```
+
+  You may want to add `nvm use 6.9.4` add the end of your .bashrc/.profile or change (nvm alias)[https://github.com/creationix/nvm#listing-versions] to set 6.9.4 be your default version:
+    `nvm alias default 6.9.4`
+
+3. #### Change directory to src and do:
+  ```npm install```
+
+  
+4. #### To get the web-server to work:
+  Change directory to `/src/controllers/web` and do
+  ```npm install```
+  and to start the local-server do the following and go to `http://localhost:5000/` in your browser:
+  ```node app.js```
+
+
 
 ### Common errors:
 1. **USB permission (on linux)** : </br>
