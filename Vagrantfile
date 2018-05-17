@@ -14,11 +14,18 @@ Vagrant.configure('2') do |config|
     # Usb settings
     vb.customize ["modifyvm", :id, "--usb", "on"]
     vb.customize ["modifyvm", :id, "--usbehci", "on"]
-    vb.customize ["usbfilter", "add", "0", 
-      "--target", :id, 
-      "--name", "blink(1)",
-      "--manufacturer", "ThingM",
-      "--product", "blink(1) mk2"]
+    vb.customize [
+        "usbfilter", "add", "0", 
+        "--target", :id, 
+        "--name", "blink(1)",
+        "--manufacturer", "ThingM",
+        "--product", "blink(1) mk2"
+      ]
+    vb.customize [
+        "modifyvm", :id,
+        "--audio", "coreaudio",
+        "--audiocontroller", "hda"
+      ]
   end
 
   config.vm.define :tasklights do |machine|
@@ -26,27 +33,39 @@ Vagrant.configure('2') do |config|
     machine.vm.network 'private_network', ip: '192.168.44.4'
 
 
-    machine.vm.provision "shell", inline: <<SCRIPT
+    machine.vm.provision "shell", inline: <<-SCRIPT
         sudo apt-get update
 
- sudo apt-get install -y \
-    apt-transport-https \
-    ca-certificates \
-    curl \
-    software-properties-common
+        sudo apt-get install -y \
+            apt-transport-https \
+            ca-certificates \
+            curl \
+            software-properties-common
 
-curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
-sudo apt-key fingerprint 0EBFCD88
+        curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
+        sudo apt-key fingerprint 0EBFCD88
 
-sudo add-apt-repository \
-   "deb [arch=amd64] https://download.docker.com/linux/ubuntu \
-   $(lsb_release -cs) \
-   stable"
+        sudo add-apt-repository \
+          "deb [arch=amd64] https://download.docker.com/linux/ubuntu \
+          $(lsb_release -cs) \
+          stable"
 
-sudo apt-get update -q
-sudo apt-get install -y docker-ce
+        sudo apt-get update -q
+        sudo apt-get install -y docker-ce
 
-SCRIPT
+        # Audio 
+        sudo add-apt-repository ppa:ubuntu-audio-dev/alsa-daily
+        sudo apt-get update
+        sudo apt-get install -y linux-headers-$(uname -r) oem-audio-hda-daily-dkms alsa alsa-utils pulseaudio pulseaudio-utils gconf2 paprefs
+        sudo usermod -a -G audio vagrant
+
+        echo 'options snd-hda-intel model=generic index=0' >> /etc/modprobe.d/alsa-base.conf
+        echo 'snd' >> /etc/modules
+        echo 'snd-hda-intel' >> /etc/modules
+        modprobe snd
+        modprobe snd-hda-intel
+        alsa force-reload
+    SCRIPT
   end
 
 end

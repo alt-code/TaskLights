@@ -48,9 +48,8 @@ You may have to plug-in/out the blink1 in order for the usb device to register w
 
 Inside /vagrant/src/ Build the docker image and run!
 ```
-sudo docker build -t chrisparnin/tasklights
-# use the value you see from lsusb
-sudo docker run -it --device /dev/bus/usb/002/002 chrisparnin/tasklights bash
+sudo docker build -t chrisparnin/tasklights .
+sudo docker run -it --privileged chrisparnin/tasklights bash
 $container> cd /TaskLights && node blink.js -p
 ```
 
